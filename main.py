@@ -10,6 +10,7 @@ from services import load_data, plot_data, plot_multiple_data
 st.set_page_config(layout="wide")
 
 # Sidebar
+st.sidebar.image("./src/logo.png", width=100)    
 st.sidebar.title("Options")
 start_date = st.sidebar.date_input("Start date", date(2015, 1, 1))
 TODAY = date.today().strftime("%Y-%m-%d")
