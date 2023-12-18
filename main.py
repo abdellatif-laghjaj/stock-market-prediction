@@ -6,6 +6,9 @@ from prophet import Prophet
 from prophet.plot import plot_plotly
 from services import load_data, plot_raw_data
 
+# Set page layout to wide
+st.set_page_config(layout="wide")
+
 st.sidebar.title("Options")
 start_date = st.sidebar.date_input("Start date", date(2015, 1, 1))
 TODAY = date.today().strftime("%Y-%m-%d")
