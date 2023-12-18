@@ -6,8 +6,6 @@ from prophet import Prophet
 from prophet.plot import plot_plotly
 from services import load_data, plot_data, plot_multiple_data
 
-from utils import custom_card
-
 # Set page layout to wide
 st.set_page_config(layout="wide")
 
