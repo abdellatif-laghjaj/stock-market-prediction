@@ -10,7 +10,7 @@ from services import load_data, plot_data, plot_multiple_data
 st.set_page_config(layout="wide")
 
 # Sidebar
-st.sidebar.image("./src/logo.png", width=100)    
+st.sidebar.image("./src/logo.png", width=100)
 st.sidebar.title("Options")
 start_date = st.sidebar.date_input("Start date", date(2015, 1, 1))
 TODAY = date.today().strftime("%Y-%m-%d")
@@ -34,13 +34,13 @@ with st.spinner("Loading data..."):
 success_message = st.success("Data loaded successfully!")
 
 # Introduce a delay before clearing the success message
-sleep(1) 
+sleep(1)
 
 # Clear the success message
 success_message.empty()
 
 # Set the width of the table and figure to 100%
-st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)   
+st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)
 st.write("This section displays historical stock price data for {}.".format(selected_stock))
 st.dataframe(data, use_container_width=True)
 plot_data(data)
