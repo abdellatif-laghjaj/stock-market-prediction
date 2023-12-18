@@ -36,7 +36,8 @@ sleep(1)
 success_message.empty()
 
 # Set the width of the table and figure to 100%
-st.markdown("<h3><span style='color: orange;'>{}</span> Historical Data</h3>".format(selected_stock), unsafe_allow_html=True)   
+st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)   
+st.write("This section displays historical stock price data for {}.".format(selected_stock))
 st.dataframe(data, use_container_width=True)
 plot_data(data)
 
@@ -46,18 +47,21 @@ df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
 model = Prophet()
 model.fit(df_train)
 future = model.make_future_dataframe(periods=period)
-forcast = model.predict(future)
-forcast = forcast[forcast['ds'] >= TODAY]
+forecast = model.predict(future)
+forecast = forecast[forecast['ds'] >= TODAY]
 
-st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Data</h3>".format(selected_stock), unsafe_allow_html=True)
-st.dataframe(forcast, use_container_width=True)
+st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Data</h2>".format(selected_stock), unsafe_allow_html=True)
+st.write("This section displays the forecasted stock price data for {} using the Prophet model.".format(selected_stock))
+st.dataframe(forecast, use_container_width=True)
 
 # Plotting
-st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Plot</h3>".format(selected_stock), unsafe_allow_html=True)
-forcast_plot = plot_plotly(model, forcast)
-st.plotly_chart(forcast_plot, use_container_width=True)
+st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot</h2>".format(selected_stock), unsafe_allow_html=True)
+st.write("This section visualizes the forecasted stock price for {} using a time series plot.".format(selected_stock))
+forecast_plot = plot_plotly(model, forecast)
+st.plotly_chart(forecast_plot, use_container_width=True)
 
 # Plotting components
-st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Components</h3>".format(selected_stock), unsafe_allow_html=True)
-components = model.plot_components(forcast)
+st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Components</h2>".format(selected_stock), unsafe_allow_html=True)
+st.write("This section breaks down the forecast components, including trends and seasonality, for {}.".format(selected_stock))
+components = model.plot_components(forecast)
 st.write(components)
