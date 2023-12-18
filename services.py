@@ -14,5 +14,5 @@ def plot_data(data):
     fig = go.Figure()
     fig.add_trace(go.Scatter(x=data['Date'], y=data['Open'], name="stock_open"))
     fig.add_trace(go.Scatter(x=data['Date'], y=data['Close'], name="stock_close"))
-    fig.update_layout(title_text="Time Series Data", xaxis_rangeslider_visible=True)
+    fig.update_layout(title_text="Stock Prices Over Time", xaxis_rangeslider_visible=True)
     st.plotly_chart(fig, use_container_width=True)
