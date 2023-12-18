@@ -43,16 +43,21 @@ plot_data(data)
 # Forecasting
 df_train = data[["Date", "Close"]]
 df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
-m = Prophet()
-m.fit(df_train)
-future = m.make_future_dataframe(periods=period)
-forcast = m.predict(future)
+model = Prophet()
+model.fit(df_train)
+future = model.make_future_dataframe(periods=period)
+forcast = model.predict(future)
 forcast = forcast[forcast['ds'] >= TODAY]
 
 st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Data</h3>".format(selected_stock), unsafe_allow_html=True)
 st.dataframe(forcast, use_container_width=True)
 
-fig1 = plot_plotly(m, forcast)
-st.plotly_chart(fig1, use_container_width=True)
-fig2 = m.plot_components(forcast)
-st.write(fig2)
+# Plotting
+st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Plot</h3>".format(selected_stock), unsafe_allow_html=True)
+forcast_plot = plot_plotly(model, forcast)
+st.plotly_chart(forcast_plot, use_container_width=True)
+
+# Plotting components
+st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Components</h3>".format(selected_stock), unsafe_allow_html=True)
+components = model.plot_components(forcast)
+st.write(components)
