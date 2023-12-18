@@ -36,7 +36,7 @@ sleep(1)
 success_message.empty()
 
 # Set the width of the table and figure to 100%
-st.subheader(f"{selected_stock} Historical Data")
+st.markdown("<h3><span style='color: orange;'>{}</span> Historical Data</h3>".format(selected_stock), unsafe_allow_html=True)   
 st.dataframe(data, use_container_width=True)
 plot_data(data)
 
@@ -49,7 +49,7 @@ future = m.make_future_dataframe(periods=period)
 forcast = m.predict(future)
 forcast = forcast[forcast['ds'] >= TODAY]
 
-st.subheader("Forecast data")
+st.markdown("<h3><span style='color: orange;'>{}</span> Forecast Data</h3>".format(selected_stock), unsafe_allow_html=True)
 st.dataframe(forcast, use_container_width=True)
 
 fig1 = plot_plotly(m, forcast)
