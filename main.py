@@ -4,6 +4,11 @@ import streamlit as st
 from datetime import date
 from prophet import Prophet
 from prophet.plot import plot_plotly
+"""
+This is the main file for the Stock Market Prediction Web App.
+It uses the Streamlit library to create a user-friendly web application
+that allows users to select a stock, view historical data, and predict future trends using the Prophet library.
+"""
 from services import load_data, plot_data, plot_multiple_data
 
 # Set page layout to wide
@@ -30,10 +35,25 @@ selected_stocks = st.sidebar.multiselect("Select stocks for comparison", stocks)
 years_to_predict = st.sidebar.slider("Years of prediction:", 1, 5)
 period = years_to_predict * 365
 
-# Display a loading spinner while loading data
-with st.spinner("Loading data..."):
-    data = load_data(selected_stock, start_date, TODAY)
-    sleep(1)
+def load_stock_data(stock, start_date, end_date):
+    """
+    Load stock data for the specified stock within the given date range.
+
+    Parameters:
+    stock (str): The stock ticker symbol to load data for.
+    start_date (datetime.date): The start date of the data range.
+    end_date (datetime.date): The end date of the data range.
+
+    Returns:
+    DataFrame: The loaded stock data.
+    """
+    with st.spinner("Loading data..."):
+        data = load_data(stock, start_date, end_date)
+        sleep(1)  # Introducing delay to simulate loading
+        return data
+
+# Load data for the selected stock
+data = load_stock_data(selected_stock, start_date, TODAY)
 
 # Display the success message
 success_message = st.success("Data loaded successfully!")
@@ -46,12 +66,26 @@ success_message.empty()
 
 # Forecasting
 df_train = data[["Date", "Close"]]
+def forecast_stock(training_data, prediction_period):
+    """
+    Forecast the stock prices using the Prophet model for the given prediction period.
+
+    Parameters:
+    training_data (DataFrame): The historical data to train the model on, with columns 'ds' and 'y'.
+    prediction_period (int): The number of periods to predict into the future.
+
+    Returns:
+    tuple[model (Prophet), forecast (DataFrame)]: The trained Prophet model and the forecast results.
+    """
+    model = Prophet()
+    model.fit(training_data)
+    future = model.make_future_dataframe(periods=prediction_period)
+    forecast = model.predict(future)
+    forecast = forecast[forecast['ds'] >= TODAY]
+    return model, forecast
+
 df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
-model = Prophet()
-model.fit(df_train)
-future = model.make_future_dataframe(periods=period)
-forecast = model.predict(future)
-forecast = forecast[forecast['ds'] >= TODAY]
+model, forecast = forecast_stock(df_train, period)
 
 # Dataframes Tab
 with dataframes_tab:
