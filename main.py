@@ -6,7 +6,6 @@ import yfinance as yf
 from prophet import Prophet
 from prophet.plot import plot_plotly
 from services import load_data, plot_data, plot_multiple_data
-from utils import img_to_html
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
@@ -17,13 +16,16 @@ start_date_key = str(uuid.uuid4())
 start_date = st.sidebar.date_input("Start date", date(2015, 1, 1), key=start_date_key)
 TODAY = date.today().strftime("%Y-%m-%d")
 
+# App header
 st.markdown("<h1 style='text-align: center;'>Stock Forecast App</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>A simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
 
+# Stock selection in the sidebar
 stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "FB", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
 selected_stock = st.sidebar.selectbox("Select stock for prediction", stocks)
-selected_stocks = st.sidebar.multiselect("Select stocks for comparaison", stocks)
+selected_stocks = st.sidebar.multiselect("Select stocks for comparison", stocks)
 
+# Years to predict slider
 years_to_predict = st.sidebar.slider("Years of prediction:", 1, 5)
 period = years_to_predict * 365
 
@@ -41,7 +43,7 @@ sleep(1)
 # Clear the success message
 success_message.empty()
 
-# Set the width of the table and figure to 100%
+# Display historical data
 st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)
 st.write("This section displays historical stock price data for {}.".format(selected_stock))
 st.dataframe(data, use_container_width=True)
@@ -56,25 +58,25 @@ future = model.make_future_dataframe(periods=period)
 forecast = model.predict(future)
 forecast = forecast[forecast['ds'] >= TODAY]
 
+# Display forecast data
 st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Data</h2>".format(selected_stock), unsafe_allow_html=True)
 st.write("This section displays the forecasted stock price data for {} using the Prophet model.".format(selected_stock))
 st.dataframe(forecast, use_container_width=True)
 
-# Plotting
+# Plotting forecast
 st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot</h2>".format(selected_stock), unsafe_allow_html=True)
 st.write("This section visualizes the forecasted stock price for {} using a time series plot.".format(selected_stock))
 forecast_plot = plot_plotly(model, forecast)
 st.plotly_chart(forecast_plot, use_container_width=True)
 
-# Plotting components
+# Plotting forecast components
 st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Components</h2>".format(selected_stock), unsafe_allow_html=True)
 st.write("This section breaks down the forecast components, including trends and seasonality, for {}.".format(selected_stock))
 components = model.plot_components(forecast)
 st.write(components)
 
-# Forcast multiple stocks
+# Forecast multiple stocks
 stocks_data = []
-forcasted_data = []
 for stock in selected_stocks:
     stocks_data.append(load_data(stock, start_date, TODAY))
 
@@ -92,4 +94,5 @@ for data in stocks_data:
         forecast = forecast[forecast['ds'] >= TODAY]
         forcasted_data.append(forecast)
 
+# Plotting forecast of multiple stocks
 plot_multiple_data(forcasted_data, selected_stocks)
