@@ -5,7 +5,6 @@ from datetime import date
 from prophet import Prophet
 from prophet.plot import plot_plotly
 from services import load_data, plot_data, plot_multiple_data
-from streamlit_card import card
 
 from utils import custom_card
 
