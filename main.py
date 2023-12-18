@@ -20,11 +20,20 @@ selected_stock = st.sidebar.selectbox("Select stock for prediction", stocks)
 years_to_predict = st.sidebar.slider("Years of prediction:", 1, 5)
 period = years_to_predict * 365
 
-data_load_state = st.progress(0,text="Loading data...")
-data = load_data(selected_stock, start_date, TODAY)
-data_load_state.progress(100)
-data_load_state.text("Data loaded successfully!")
-# st.success("Data loaded successfully!")
+# Display a loading spinner while loading data
+with st.spinner("Loading data..."):
+    data = load_data(selected_stock, start_date, TODAY)
+    sleep(1)  # Simulate loading delay
+
+# Display the success message
+success_message = st.success("Data loaded successfully!")
+
+# Introduce a delay before clearing the success message
+sleep(1)  # Adjust the duration as needed
+
+# Clear the success message
+success_message.empty()
+
 st.subheader("Raw data")
 st.write(data)
 plot_raw_data(data)
