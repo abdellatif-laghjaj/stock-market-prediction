@@ -122,4 +122,4 @@ with comparison_tab:
         st.warning("Please select at least one stock if you want to compare them.")
 
 # Display balloons at the end
-st.balloons()
+# st.balloons()
