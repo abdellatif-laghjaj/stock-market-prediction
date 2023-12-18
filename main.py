@@ -1,18 +1,20 @@
 from time import sleep
+import uuid
 import streamlit as st
 from datetime import date
 import yfinance as yf
 from prophet import Prophet
 from prophet.plot import plot_plotly
 from services import load_data, plot_data, plot_multiple_data
+from utils import img_to_html
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
 
 # Sidebar
-st.sidebar.image("./src/logo.png", width=100)
 st.sidebar.title("Options")
-start_date = st.sidebar.date_input("Start date", date(2015, 1, 1))
+start_date_key = str(uuid.uuid4())
+start_date = st.sidebar.date_input("Start date", date(2015, 1, 1), key=start_date_key)
 TODAY = date.today().strftime("%Y-%m-%d")
 
 st.markdown("<h1 style='text-align: center;'>Stock Forecast App</h1>", unsafe_allow_html=True)
