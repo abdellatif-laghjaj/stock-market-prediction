@@ -22,7 +22,7 @@ st.markdown("<h1 style='text-align: center;'>Stock Forecast App</h1>", unsafe_al
 st.markdown("<p style='text-align: center;'>A simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
 
 # Tabs
-dataframes_tab, plots_tab, forecasting_tab, comparison_tab, statistics_tab = st.tabs(["Dataframes", "Plots", "Forecasting", "Comparison", "Statistics"])
+dataframes_tab, plots_tab, statistics_tab, forecasting_tab, comparison_tab = st.tabs(["Dataframes", "Plots", "Statistics", "Forecasting", "Comparison"])
 
 # Stock selection
 stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "FB", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
@@ -72,6 +72,16 @@ with plots_tab:
     # Raw data plot
     plot_data(data)
 
+# Statistics Tab
+with statistics_tab:
+    st.markdown("<h2><span style='color: orange;'>Descriptive </span>Statistics</h2>", unsafe_allow_html=True)
+    st.write("This section provides descriptive statistics for the selected stock.")
+
+    # Descriptive Statistics Table
+    # drop the date column
+    data = data.drop(columns=['Date', 'Adj Close', 'Volume'])
+    st.table(data.describe())
+
 # Forecasting Tab
 with forecasting_tab:
     # Plotting forecast
@@ -112,34 +122,6 @@ with comparison_tab:
         plot_multiple_data(forcasted_data, selected_stocks)
     else:
         st.warning("Please select at least one stock if you want to compare them.")
-
-# Statistics Tab
-with statistics_tab:
-    st.markdown("<h2><span style='color: orange;'>Descriptive Statistics</span></h2>", unsafe_allow_html=True)
-    st.write("This section provides descriptive statistics for the selected stock.")
-
-    # Define a 2x3 grid layout for the cards
-    col1, col2, col3 = st.columns(3)
-
-    # Custom Card for Mean
-    with col1:
-        custom_card("Mean", f"The mean closing price is: {data['Close'].mean():.2f}")
-
-    # Custom Card for Standard Deviation
-    with col2:
-        custom_card("Standard Deviation", f"The std deviation is: {data['Close'].std():.2f}")
-
-    # Custom Card for Variance
-    with col3:
-        custom_card("Variance", f"The variance is: {data['Close'].var():.2f}")
-
-    # Custom Card for Maximum
-    with col1:
-        custom_card("Maximum", f"The maximum closing price is: {data['Close'].max():.2f}")
-
-    # Custom Card for Minimum
-    with col2:
-        custom_card("Minimum", f"The minimum closing price is: {data['Close'].min():.2f}")
 
 # Display balloons at the end
 st.balloons()
