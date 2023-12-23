@@ -3,6 +3,7 @@ import uuid
 import pandas as pd
 from sklearn.metrics import mean_absolute_error
 import streamlit as st
+from streamlit_option_menu import option_menu
 from datetime import date
 from prophet import Prophet
 from prophet.plot import plot_plotly
@@ -21,8 +22,14 @@ end_date = st.sidebar.date_input("End date", date.today())
 st.markdown("<h1 style='text-align: center;'>Stock Forecast App 📈</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>A simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
 
-# Tabs
-dataframes_tab, plots_tab, statistics_tab, forecasting_tab, comparison_tab = st.tabs(["Dataframes", "Plots", "Statistics", "Forecasting", "Comparison"])
+selected_tab = option_menu(
+    menu_title=None,
+    options=["Dataframes", "Plots", "Statistics", "Forecasting", "Comparison"],
+    icons=["table", "bar-chart", "calculator", "graph-up-arrow", "arrow-down-up"],
+    menu_icon="📊",
+    default_index=0,
+    orientation="horizontal",
+)
 
 # Stock selection
 stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
@@ -63,7 +70,7 @@ end_date_datetime = pd.to_datetime(end_date)
 forecast = forecast[forecast['ds'] >= end_date_datetime]
 
 # Dataframes Tab
-with dataframes_tab:
+if selected_tab == "Dataframes":
     # Display historical data
     st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)
     st.write("This section displays historical stock price data for {} from {} to {}.".format(selected_stock, start_date, end_date))
@@ -112,7 +119,7 @@ with dataframes_tab:
     st.dataframe(new_forecast, use_container_width=True)
 
 # Plots Tab
-with plots_tab:
+if selected_tab == "Plots":
     # Raw data plot
     plot_data(data)
 
@@ -120,7 +127,7 @@ with plots_tab:
     plot_volume(data)
 
 # Statistics Tab
-with statistics_tab:
+if selected_tab == "Statistics":
     st.markdown("<h2><span style='color: orange;'>Descriptive </span>Statistics</h2>", unsafe_allow_html=True)
     st.write("This section provides descriptive statistics for the selected stock.")
 
@@ -129,8 +136,8 @@ with statistics_tab:
     data = data.drop(columns=['Date', 'Adj Close', 'Volume'])
     st.table(data.describe())
 
-# Forecasting Tab
-with forecasting_tab:
+# Forecasting Tab    
+if selected_tab == "Forecasting":
     # Plotting forecast
     st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot</h2>".format(selected_stock), unsafe_allow_html=True)
     st.write("This section visualizes the forecasted stock price for {} using a time series plot from {} to {}.".format(selected_stock, end_date, end_date + pd.Timedelta(days=period)))
@@ -144,7 +151,7 @@ with forecasting_tab:
     st.write(components)
 
 # Comparison Tab
-with comparison_tab:
+if selected_tab == "Comparison":
     if selected_stocks:
         # Forecast multiple stocks
         stocks_data = []
@@ -152,7 +159,7 @@ with comparison_tab:
         for stock in selected_stocks:
             stocks_data.append(load_data(stock, start_date, end_date))
 
-        st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot of Multiple Stocks</h2>".format(', '.join(selected_stocks)), unsafe_allow_html=True)
+        st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Comparison Plot</h2>".format(', '.join(selected_stocks)), unsafe_allow_html=True)
         st.write("This section visualizes the forecasted stock price for {} using a time series plot from {} to {}.".format(', '.join(selected_stocks), end_date, end_date + pd.Timedelta(days=period)))
 
         for i, data in enumerate(stocks_data):
