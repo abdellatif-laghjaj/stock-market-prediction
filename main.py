@@ -1,5 +1,7 @@
 from time import sleep
 import uuid
+import pandas as pd
+from sklearn.metrics import mean_absolute_error
 import streamlit as st
 from datetime import date
 from prophet import Prophet
@@ -12,11 +14,11 @@ st.set_page_config(layout="wide")
 # Sidebar
 st.sidebar.title("Options")
 start_date_key = str(uuid.uuid4())
-start_date = st.sidebar.date_input("Start date", date(2015, 1, 1), key=start_date_key)
-TODAY = date.today().strftime("%Y-%m-%d")
+start_date = st.sidebar.date_input("Start date", date(2018, 1, 1), key=start_date_key)
+end_date = st.sidebar.date_input("End date", date.today())
 
 # Header
-st.markdown("<h1 style='text-align: center;'>Stock Forecast App</h1>", unsafe_allow_html=True)
+st.markdown("<h1 style='text-align: center;'>Stock Forecast App 📈</h1>", unsafe_allow_html=True)
 st.markdown("<p style='text-align: center;'>A simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
 
 # Tabs
@@ -32,7 +34,7 @@ period = years_to_predict * 365
 
 # Display a loading spinner while loading data
 with st.spinner("Loading data..."):
-    data = load_data(selected_stock, start_date, TODAY)
+    data = load_data(selected_stock, start_date, end_date)
     sleep(1)
 
 # Display the success message
@@ -51,18 +53,23 @@ model = Prophet()
 model.fit(df_train)
 future = model.make_future_dataframe(periods=period)
 forecast = model.predict(future)
-forecast = forecast[forecast['ds'] >= TODAY]
+
+# Convert end_date to datetime
+end_date_datetime = pd.to_datetime(end_date)
+
+# Filter forecast based on end_date
+forecast = forecast[forecast['ds'] >= end_date_datetime]
 
 # Dataframes Tab
 with dataframes_tab:
     # Display historical data
     st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)
-    st.write("This section displays historical stock price data for {}.".format(selected_stock))
+    st.write("This section displays historical stock price data for {} from {} to {}.".format(selected_stock, start_date, end_date))
     st.dataframe(data, use_container_width=True)
 
     # Display forecast data
     st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Data</h2>".format(selected_stock), unsafe_allow_html=True)
-    st.write("This section displays the forecasted stock price data for {} using the Prophet model.".format(selected_stock))
+    st.write("This section displays the forecasted stock price data for {} using the Prophet model from {} to {}.".format(selected_stock, end_date, end_date + pd.Timedelta(days=period)))
     st.dataframe(forecast, use_container_width=True)
 
 # Plots Tab
@@ -87,13 +94,13 @@ with statistics_tab:
 with forecasting_tab:
     # Plotting forecast
     st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot</h2>".format(selected_stock), unsafe_allow_html=True)
-    st.write("This section visualizes the forecasted stock price for {} using a time series plot.".format(selected_stock))
+    st.write("This section visualizes the forecasted stock price for {} using a time series plot from {} to {}.".format(selected_stock, end_date, end_date + pd.Timedelta(days=period)))
     forecast_plot = plot_plotly(model, forecast)
     st.plotly_chart(forecast_plot, use_container_width=True)
 
     # Plotting forecast components
     st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Components</h2>".format(selected_stock), unsafe_allow_html=True)
-    st.write("This section breaks down the forecast components, including trends and seasonality, for {}.".format(selected_stock))
+    st.write("This section breaks down the forecast components, including trends and seasonality, for {} from {} to {}.".format(selected_stock, end_date, end_date + pd.Timedelta(days=period)))
     components = model.plot_components(forecast)
     st.write(components)
 
@@ -104,12 +111,12 @@ with comparison_tab:
         stocks_data = []
         forcasted_data = []
         for stock in selected_stocks:
-            stocks_data.append(load_data(stock, start_date, TODAY))
+            stocks_data.append(load_data(stock, start_date, end_date))
 
         st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Plot of Multiple Stocks</h2>".format(', '.join(selected_stocks)), unsafe_allow_html=True)
-        st.write("This section visualizes the forecasted stock price for {} using a time series plot.".format(', '.join(selected_stocks)))
+        st.write("This section visualizes the forecasted stock price for {} using a time series plot from {} to {}.".format(', '.join(selected_stocks), end_date, end_date + pd.Timedelta(days=period)))
 
-        for data in stocks_data:
+        for i, data in enumerate(stocks_data):
             if data is not None:
                 df_train = data[["Date", "Close"]]
                 df_train = df_train.rename(columns={"Date": "ds", "Close": "y"})
@@ -117,7 +124,10 @@ with comparison_tab:
                 model.fit(df_train)
                 future = model.make_future_dataframe(periods=period)
                 forecast = model.predict(future)
-                forecast = forecast[forecast['ds'] >= TODAY]
+                forecast = forecast[forecast['ds'] >= end_date_datetime]
+                st.markdown("<h3><span style='color: orange;'>{}</span> Forecast DataFrame</h3>".format(selected_stocks[i]), unsafe_allow_html=True)
+                st.dataframe(forecast, use_container_width=True)
+
                 forcasted_data.append(forecast)
 
         plot_multiple_data(forcasted_data, selected_stocks)
