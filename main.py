@@ -20,7 +20,7 @@ end_date = st.sidebar.date_input("End date", date.today())
 
 # Header
 st.markdown("<h1 style='text-align: center;'>Stock Forecast App 📈</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center;'>A simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'><b>Forcasti.</b><b style='color: orange'>fy</b> is a simple web app for stock price prediction using the <a href='https://facebook.github.io/prophet/'>Prophet</a> library.</p>", unsafe_allow_html=True)
 
 selected_tab = option_menu(
     menu_title=None,
