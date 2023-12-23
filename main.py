@@ -9,7 +9,7 @@ from prophet.plot import plot_plotly
 from services import load_data, plot_data, plot_multiple_data, plot_volume
 
 # Set page layout to wide
-st.set_page_config(layout="wide")
+st.set_page_config(layout="wide", page_title="Forcastify", page_icon="📈")
 
 # Sidebar
 st.sidebar.title("Options")
@@ -25,7 +25,7 @@ st.markdown("<p style='text-align: center;'>A simple web app for stock price pre
 dataframes_tab, plots_tab, statistics_tab, forecasting_tab, comparison_tab = st.tabs(["Dataframes", "Plots", "Statistics", "Forecasting", "Comparison"])
 
 # Stock selection
-stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "FB", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
+stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
 selected_stock = st.sidebar.selectbox("Select stock for prediction", stocks)
 selected_stocks = st.sidebar.multiselect("Select stocks for comparison", stocks)
 
