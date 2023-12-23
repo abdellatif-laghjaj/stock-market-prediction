@@ -4,7 +4,7 @@ import streamlit as st
 from datetime import date
 from prophet import Prophet
 from prophet.plot import plot_plotly
-from services import load_data, plot_data, plot_multiple_data
+from services import load_data, plot_data, plot_multiple_data, plot_volume
 
 # Set page layout to wide
 st.set_page_config(layout="wide")
@@ -69,6 +69,9 @@ with dataframes_tab:
 with plots_tab:
     # Raw data plot
     plot_data(data)
+
+    # Data Volume plot
+    plot_volume(data)
 
 # Statistics Tab
 with statistics_tab:
