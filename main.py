@@ -65,12 +65,49 @@ with dataframes_tab:
     # Display historical data
     st.markdown("<h2><span style='color: orange;'>{}</span> Historical Data</h2>".format(selected_stock), unsafe_allow_html=True)
     st.write("This section displays historical stock price data for {} from {} to {}.".format(selected_stock, start_date, end_date))
-    st.dataframe(data, use_container_width=True)
+    
+    # Copy data
+    new_data = data.copy()
+
+    # Drop Adj Close and Volume columns
+    new_data = data.drop(columns=['Adj Close', 'Volume'])
+    st.dataframe(new_data, use_container_width=True)
 
     # Display forecast data
     st.markdown("<h2><span style='color: orange;'>{}</span> Forecast Data</h2>".format(selected_stock), unsafe_allow_html=True)
     st.write("This section displays the forecasted stock price data for {} using the Prophet model from {} to {}.".format(selected_stock, end_date, end_date + pd.Timedelta(days=period)))
-    st.dataframe(forecast, use_container_width=True)
+    
+    # Copy forecast dataframe
+    new_forecast = forecast.copy()
+
+    # Drop unwanted columns
+    new_forecast = new_forecast.drop(columns=[
+        'additive_terms', 
+        'additive_terms_lower', 
+        'additive_terms_upper', 
+        'weekly', 
+        'weekly_lower', 
+        'weekly_upper', 
+        'yearly', 
+        'yearly_lower', 
+        'yearly_upper', 
+        'multiplicative_terms', 
+        'multiplicative_terms_lower', 
+        'multiplicative_terms_upper'
+    ])
+    
+    # Rename columns
+    new_forecast = new_forecast.rename(columns={
+        "ds": "Date", 
+        "yhat": "Close", 
+        "yhat_lower": "Close Lower",
+        "yhat_upper": "Close Upper",
+        "trend": "Trend", 
+        "trend_lower": "Trend Lower", 
+        "trend_upper": "Trend Upper"
+    })
+
+    st.dataframe(new_forecast, use_container_width=True)
 
 # Plots Tab
 with plots_tab:
@@ -126,7 +163,38 @@ with comparison_tab:
                 forecast = model.predict(future)
                 forecast = forecast[forecast['ds'] >= end_date_datetime]
                 st.markdown("<h3><span style='color: orange;'>{}</span> Forecast DataFrame</h3>".format(selected_stocks[i]), unsafe_allow_html=True)
-                st.dataframe(forecast, use_container_width=True)
+
+                # Copy forecast dataframe
+                new_forecast = forecast.copy()
+
+                # Drop unwanted columns
+                new_forecast = new_forecast.drop(columns=[
+                    'additive_terms', 
+                    'additive_terms_lower', 
+                    'additive_terms_upper', 
+                    'weekly', 
+                    'weekly_lower', 
+                    'weekly_upper', 
+                    'yearly', 
+                    'yearly_lower', 
+                    'yearly_upper', 
+                    'multiplicative_terms', 
+                    'multiplicative_terms_lower', 
+                    'multiplicative_terms_upper'
+                ])
+
+                # Rename columns
+                new_forecast = new_forecast.rename(columns={
+                    "ds": "Date", 
+                    "yhat": "Close", 
+                    "yhat_lower": "Close Lower",
+                    "yhat_upper": "Close Upper",
+                    "trend": "Trend", 
+                    "trend_lower": "Trend Lower", 
+                    "trend_upper": "Trend Upper"
+                })
+
+                st.dataframe(new_forecast, use_container_width=True)
 
                 forcasted_data.append(forecast)
 
