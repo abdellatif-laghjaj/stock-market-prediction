@@ -26,6 +26,8 @@ dataframes_tab, plots_tab, statistics_tab, forecasting_tab, comparison_tab = st.
 
 # Stock selection
 stocks = ("AAPL", "GOOG", "MSFT", "GME", "AMC", "TSLA", "AMZN", "NFLX", "NVDA", "AMD", "PYPL")
+
+# Stocks abreviations
 selected_stock = st.sidebar.selectbox("Select stock for prediction", stocks)
 selected_stocks = st.sidebar.multiselect("Select stocks for comparison", stocks)
 
