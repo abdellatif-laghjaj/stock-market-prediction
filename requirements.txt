@@ -1,4 +1,5 @@
 streamlit
+matplotlib
 streamlit-option-menu
 prophet
 yfinance
