@@ -1,4 +1,4 @@
-# Stock Market Prediction Web App
+# Stock Market Prediction Web App Developed with Streamlit
 
 #### TODO: App Icon
 
